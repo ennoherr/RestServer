@@ -44,11 +44,11 @@ void setup(void)
 	rest.variable("a5", &a5);
 
 	// Function to be exposed
-	//rest.function("led", ledControl);
+	rest.function("led", ledControl);
 
 	// Give name & ID to the device (ID should be 6 characters long)
-	rest.set_id("008");
-	rest.set_name("dapper_drake");
+	rest.set_id(String(mac[3], HEX) + String(mac[4], HEX) + String(mac[5], HEX));
+	rest.set_name("arduino1");
 
 	// Start the Ethernet connection and the server
 	//if (Ethernet.begin(mac) == 0) {
@@ -95,6 +95,5 @@ int ledControl(String command) {
 	int state = command.toInt();
 
 	digitalWrite(6, state);
-	return 1;
-
+	return state;
 }
