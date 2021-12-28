@@ -15,8 +15,8 @@ EthernetServer server(80);
 // Create aREST instance
 aREST rest = aREST();
 
-// Variables to be exposed to the API
-int milli;
+// Variables
+bool isDhcp = false;
 float a0 = 0.0;
 float a1 = 0.0;
 float a2 = 0.0;
@@ -24,18 +24,17 @@ float a3 = 0.0;
 float a4 = 0.0;
 float a5 = 0.0;
 
-// Declare functions to be exposed to the API
+// Declare functions
 int ledControl(String command);
 
 void setup(void)
 {
-	// Start Serial
 	Serial.begin(9600);
+	while (!Serial) {
+		;
+	}
 
 	// Init variables and expose them to REST API
-	//milli = millis();
-	//analog0 = analogRead(0);
-	//rest.variable("milli", &milli);
 	rest.variable("a0", &a0);
 	rest.variable("a1", &a1);
 	rest.variable("a2", &a2);
@@ -51,15 +50,30 @@ void setup(void)
 	rest.set_name("arduino1");
 
 	// Start the Ethernet connection and the server
-	//if (Ethernet.begin(mac) == 0) {
-	//  Serial.println("Failed to configure Ethernet using DHCP");
-	// no point in carrying on, so do nothing forevermore:
-	// try to congifure using IP address instead of DHCP:
-	Ethernet.begin(mac, ip);
-	//}
+	if (isDhcp) {
+		if (Ethernet.begin(mac) == 0) {
+			Serial.println("Failed to configure Ethernet using DHCP");
+			while (true) {
+				;
+			}
+		}
+	}
+	else {
+		Ethernet.begin(mac, ip, dns, gateway, subnet);
+	}
+
 	server.begin();
-	Serial.print("server is at ");
+	Serial.println("---------");
+	Serial.print("IP: ");
 	Serial.println(Ethernet.localIP());
+	Serial.print("Subnet: ");
+	Serial.println(Ethernet.subnetMask());
+	Serial.print("Gateway: ");
+	Serial.println(Ethernet.gatewayIP());
+	Serial.print("DNS: ");
+	Serial.println(Ethernet.dnsServerIP());
+	Serial.println("---------");
+	Serial.println("Server started...");
 
 	// Start watchdog
 	wdt_enable(WDTO_4S);
@@ -67,7 +81,6 @@ void setup(void)
 
 void loop() {
 
-	//milli = millis();
 	// Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
 	a0 = analogRead(0) * (5.0 / 1023.0);
 	a1 = analogRead(1) * (5.0 / 1023.0);
@@ -78,7 +91,6 @@ void loop() {
 
 	// listen for incoming clients
 	EthernetClient client = server.available();
-
 	if (client && client.available()) {
 		rest.handle(client);
 		delay(1);
