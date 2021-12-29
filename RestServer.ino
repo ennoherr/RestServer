@@ -26,6 +26,10 @@ float a5 = 0.0;
 
 // Declare functions
 int ledControl(String command);
+int ledOn(int pin);
+int ledOff(int pin);
+int ledOn(String pin);
+int ledOff(String pin);
 
 void setup(void)
 {
@@ -44,6 +48,8 @@ void setup(void)
 
 	// Function to be exposed
 	rest.function("led", ledControl);
+	rest.function("on", ledOn);
+	rest.function("off", ledOff);
 
 	// Give name & ID to the device (ID should be 6 characters long)
 	rest.set_id(String(mac[3], HEX) + String(mac[4], HEX) + String(mac[5], HEX));
@@ -92,9 +98,11 @@ void loop() {
 	// listen for incoming clients
 	EthernetClient client = server.available();
 	if (client && client.available()) {
+		ledOn(4);
 		rest.handle(client);
 		delay(1);
 		client.stop();
+		ledOff(4);
 	}
 
 	wdt_reset();
@@ -102,10 +110,39 @@ void loop() {
 
 // Custom function accessible by the API
 int ledControl(String command) {
-
+	int pin = 6;
 	// Get state from command
 	int state = command.toInt();
-
-	digitalWrite(6, state);
+	Serial.print("ledControl - command = ");
+	Serial.println(state);
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, state);
 	return state;
+}
+
+int ledOn(String pin) {
+	return ledOn(pin.toInt());
+}
+
+int ledOn(int pin) {
+	//int p = pin.toInt();
+	Serial.print("ledOn - pin = ");
+	Serial.println(pin);
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, 1);
+	return 1;
+}
+
+int ledOff(String pin) {
+	return ledOff(pin.toInt());
+}
+
+int ledOff(int pin) {
+	//int p = pin.toInt();
+	Serial.print("ledOff - pin = "); 
+	Serial.println(pin);
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, 0);
+	return 0;
+
 }
