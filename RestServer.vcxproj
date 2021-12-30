@@ -100,6 +100,7 @@
     <ProjectCapability Include="VisualMicro" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="rest-test.bat" />
     <None Include="RestServer.ino">
       <FileType>CppCode</FileType>
     </None>

@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RestServer.ino" />
+    <None Include="rest-test.bat" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.RestServer.vsarduino.h">
