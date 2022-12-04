@@ -1,3 +1,3 @@
-# RestServer for Arduino UNO
+# RestServer for Arduino
 
-Using external Headers to run a minimal RestServer.
+Using aRest library https://www.arduino.cc/reference/en/libraries/arest-ui/ to run a minimal RestServer.
